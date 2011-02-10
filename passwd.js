@@ -1,5 +1,4 @@
-;
-(function ($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 
     $.fn.boomPasswd = function (options) {
         var pluginInstance = $.data(this[0], "boomPasswdInstance"),
@@ -19,13 +18,13 @@
     var boomPasswd = {
 
         init: function ($elem, options, args) {
-            var that = this;
+            var App = this;
 
             if (!$elem.type === "password") {
                 return $elem;
             }
 
-            that.defaults = $.extend({
+            App.defaults = $.extend({
                 width: 155,
                 height: 155,
                 paddingLeft: 20,
@@ -53,34 +52,28 @@
 
             }, options);
 
-            //this.checkSupport();
-            this.setup($elem);
+            if( this.checkSupport() ){
+                $elem.hide();
+                this.setup($elem);
+            } else {
+                // include mordernizer
+            }
             //this.grid();
             // Return the new password field
             //return self.$field[0];
         },
+        
         hittedPoints: [],
-
-        points: [
-/*[20, 30],
-			[50, 30],
-			[80, 30],
-	
-			[20, 70],
-			[50, 70],
-			[80, 70],
-	
-			[20, 100],
-			[50, 440],
-			[80, 80]	*/
-        ],
-
+        
+        points:[],
+        
+        checkSupport : function (){
+              return !!document.createElement('canvas').getContext;    
+        },
+        
         setup: function (field) {
             // cache
-            var App = this,
-                ctx;
-
-            $(field).hide();
+            var App = this, ctx;
 
             $('<canvas />', {
                 id: 'boomPasswdCtx',
@@ -112,8 +105,7 @@
                     App.mousedown && App.connect(x, y);
                     break;
                 }
-            }).appendTo(
-            $(field).parent());
+            }).appendTo( $(field).parent() );
 
             ctx = App.ctx = document.getElementById('boomPasswdCtx').getContext('2d');
             App.pixelSteps = Math.floor(App.defaults.width / 4);
@@ -180,7 +172,6 @@
             if (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF])) {
                 return [xF, yF];
             }
-
             return false;
         },
         connect: function (x, y) {
@@ -219,8 +210,5 @@
         },
     };
     boomPasswd.init.prototype = boomPasswd;
-
-
-
-
+    
 })(jQuery, this, this.document);
