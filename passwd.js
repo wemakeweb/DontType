@@ -1,4 +1,5 @@
-;(function ($, window, document, undefined) {
+;
+(function ($, window, document, undefined) {
 
     $.fn.boomPasswd = function (options) {
         var pluginInstance = $.data(this[0], "boomPasswdInstance"),
@@ -52,7 +53,7 @@
 
             }, options);
 
-            if( this.checkSupport() ){
+            if (this.checkSupport()) {
                 $elem.hide();
                 this.setup($elem);
             } else {
@@ -62,18 +63,19 @@
             // Return the new password field
             //return self.$field[0];
         },
-        
+
         hittedPoints: [],
-        
-        points:[],
-        
-        checkSupport : function (){
-              return !!document.createElement('canvas').getContext;    
+
+        points: [],
+
+        checkSupport: function () {
+            return !!document.createElement('canvas').getContext;
         },
-        
+
         setup: function (field) {
             // cache
-            var App = this, ctx;
+            var App = this,
+                ctx;
 
             $('<canvas />', {
                 id: 'boomPasswdCtx',
@@ -105,17 +107,24 @@
                     App.mousedown && App.connect(x, y);
                     break;
                 }
-            }).appendTo( $(field).parent() );
+            }).appendTo($(field).parent());
 
             ctx = App.ctx = document.getElementById('boomPasswdCtx').getContext('2d');
             App.pixelSteps = Math.floor(App.defaults.width / 4);
 
             // calculate point cords
-            for (var y = 0; y <= 2; y++) {
+           /* deprecated
+           for (var y = 0; y <= 2; y++) {
                 for (var x = 0; x <= 2; x++) {
                     App.points.push([App.defaults.paddingTop + App.pixelSteps * y, App.defaults.paddingLeft + App.pixelSteps * x])
                 }
-            }
+            }*/
+
+            $.each([[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]], function (i, v) {
+                App.points.push([App.defaults.paddingTop + App.pixelSteps * v[1], App.defaults.paddingLeft + App.pixelSteps * v[0]])
+            });
+
+
 
             // draw point base aka default state
             $.each(App.points, function (i, point) {
@@ -155,9 +164,9 @@
         },
 
         notUsed: function (point) {
-           return !!$.grep( this.hittedPoints, function (p,i) {
+            return !!$.grep(this.hittedPoints, function (p, i) {
                 return (p[0] === point[0] && p[1] === point[1]);
-           });
+            });
         },
 
         hit: function (x, y) {
@@ -208,5 +217,5 @@
         },
     };
     boomPasswd.init.prototype = boomPasswd;
-    
+
 })(jQuery, this, this.document);
