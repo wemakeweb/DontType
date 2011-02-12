@@ -176,10 +176,8 @@
 
             // debug
             //console.log('[' + (xF * pixelSteps + 4), x , (xF * pixelSteps) + pixelSteps + ']','[' + (yF * pixelSteps + 4),y ,(yF * pixelSteps) + pixelSteps + ']')  
-            if (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF])) {
-                return [xF, yF];
-            }
-            return false;
+            return ? (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF]))  [xF, yF] : false;
+  
         },
         connect: function (x, y) {
             var point = this.hit(x, y),
