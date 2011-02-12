@@ -155,11 +155,9 @@
         },
 
         notUsed: function (point) {
-            var not = true;
-            $.each(this.hittedPoints, function (i, val) {
-                if (val[0] === point[0] && val[1] === point[1]) not = false;
-            });
-            return not;
+           return !!$.grep( this.hittedPoints, function (p,i) {
+                return (p[0] === point[0] && p[1] === point[1]);
+           });
         },
 
         hit: function (x, y) {
