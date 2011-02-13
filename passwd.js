@@ -1,5 +1,4 @@
-;
-(function ($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 
     $.fn.boomPasswd = function (options) {
         var pluginInstance = $.data(this[0], "boomPasswdInstance"),
@@ -18,11 +17,11 @@
 
     var boomPasswd = {
 
-        init: function ($elem, options, args) {
+        init: function (elem, options, args) {
             var App = this;
 
-            if (!$elem.type === "password") {
-                return $elem;
+            if (!elem.type === "password") {
+                return elem;
             }
 
             App.defaults = $.extend({
@@ -54,8 +53,8 @@
             }, options);
 
             if (this.checkSupport()) {
-                $elem.hide();
-                this.setup($elem);
+                $(elem).hide();
+                this.setup($(elem));
             } else {
                 // include mordernizer
             }
@@ -112,21 +111,13 @@
             ctx = App.ctx = document.getElementById('boomPasswdCtx').getContext('2d');
             App.pixelSteps = Math.floor(App.defaults.width / 4);
 
-            // calculate point cords
-           /* deprecated
-           for (var y = 0; y <= 2; y++) {
-                for (var x = 0; x <= 2; x++) {
-                    App.points.push([App.defaults.paddingTop + App.pixelSteps * y, App.defaults.paddingLeft + App.pixelSteps * x])
-                }
-            }*/
 
+            // calculate point cords
             $.each([[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]], function (i, v) {
                 App.points.push([App.defaults.paddingTop + App.pixelSteps * v[1], App.defaults.paddingLeft + App.pixelSteps * v[0]])
             });
 
-
-
-            // draw point base aka default state
+            // draw point base 
             $.each(App.points, function (i, point) {
                 ctx.beginPath();
                 ctx.arc(point[0], point[1], 14, 0, 360, false);
@@ -164,9 +155,13 @@
         },
 
         notUsed: function (point) {
-            return !!$.grep(this.hittedPoints, function (p, i) {
-                return (p[0] === point[0] && p[1] === point[1]);
-            });
+            if (this.hittedPoints.length) {
+                return !$.grep(this.hittedPoints, function (p, i) {
+                    return p[0] === point[0] && p[1] === point[1]
+                }).length;
+            } else {
+                return true;
+            }
         },
 
         hit: function (x, y) {
@@ -176,8 +171,8 @@
 
             // debug
             //console.log('[' + (xF * pixelSteps + 4), x , (xF * pixelSteps) + pixelSteps + ']','[' + (yF * pixelSteps + 4),y ,(yF * pixelSteps) + pixelSteps + ']')  
-            return ? (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF]))  [xF, yF] : false;
-  
+            return (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF])) ? [xF, yF] : false;
+
         },
         connect: function (x, y) {
             var point = this.hit(x, y),
@@ -195,7 +190,6 @@
                 ctx.strokeStyle = '#E5E5E5';
                 ctx.lineCap = 'round';
                 ctx.lineWidth = 20;
-                console.log(points.join('|'), points.length, len);
                 ctx.moveTo(this.defaults.paddingLeft + points[len - 1][0] * this.pixelSteps, this.defaults.paddingTop + points[len - 1][1] * this.pixelSteps);
                 ctx.lineTo(this.defaults.paddingLeft + points[len][0] * this.pixelSteps, this.defaults.paddingTop + points[len][1] * this.pixelSteps);
                 ctx.stroke();
