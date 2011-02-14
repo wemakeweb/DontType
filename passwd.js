@@ -27,8 +27,8 @@
             App.defaults = $.extend({
                 width: 155,
                 height: 155,
-                paddingLeft: 20,
-                paddingTop: 20,
+                padding: 20,
+				radius: 14,
                 styles: {
                     circle: {
                         borderGradient: {
@@ -45,6 +45,8 @@
                 //advanced options
                 minDirectionChange: 1,
                 minConnections: 3,
+				convertMap : [1,2,3,4,5,6,7,8,9],
+				reParse : false,
 
                 // callbacks
                 inputEnd: function (input) {},
@@ -52,13 +54,14 @@
 
             }, options);
 
-            if (this.checkSupport()) {
-                $(elem).hide();
-                this.setup($(elem));
+            if (App.checkSupport()) {
+              	App.input = $(elem)//.hide();
+                App.setup($(elem));
             } else {
                 // include mordernizer
             }
-            //this.grid();
+			
+			//this.grid();
             // Return the new password field
             //return self.$field[0];
         },
@@ -66,27 +69,33 @@
         hittedPoints: [],
 
         points: [],
-
-        checkSupport: function () {
+		
+		checkSupport: function () {
             return !!document.createElement('canvas').getContext;
         },
-
+		
+		updateInput : function(){
+			var passwd = '', App = this;
+			$.each( App.hittedPoints, function(i,val){
+				passwd += App.defaults.convertMap[val[1]*3 + val[0]]
+			});
+			
+			$(this.input).val(passwd);	
+		},
+		
         setup: function (field) {
             // cache
             var App = this,
-                ctx;
-
-            $('<canvas />', {
-                id: 'boomPasswdCtx',
-                //width : App.defaults.width,
-                //height : App.defaults.height,	
+                ctx = document.createElement('canvas');					
+				ctx.width = App.defaults.width;
+				ctx.height = App.defaults.height;
+				ctx.id = 'boomPasswdCtx';			
+				
+            $(ctx, {
                 mousedown: App.uiEvent,
                 mouseup: App.uiEvent,
                 mousemove: App.uiEvent,
                 mouseout: App.uiEvent,
-                css: {
-                    'display': 'block',
-                }
             }).data({
                 'boomPasswdInstance': App,
             }).bind('mousedown mouseup mousemove mouseout', function (event) {
@@ -109,22 +118,23 @@
             }).appendTo($(field).parent());
 
             ctx = App.ctx = document.getElementById('boomPasswdCtx').getContext('2d');
-            App.pixelSteps = Math.floor(App.defaults.width / 4);
-
+			
+            App.pixelSteps = Math.floor((App.defaults.width - (App.defaults.padding)) / 3);
+console.log(App.pixelSteps);
 
             // calculate point cords
             $.each([[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]], function (i, v) {
-                App.points.push([App.defaults.paddingTop + App.pixelSteps * v[1], App.defaults.paddingLeft + App.pixelSteps * v[0]])
+                App.points.push([App.defaults.padding + App.pixelSteps * v[1], App.defaults.padding + App.pixelSteps * v[0]])
             });
 
             // draw point base 
-            $.each(App.points, function (i, point) {
+     		$.each(App.points, function (i, point) {
                 ctx.beginPath();
-                ctx.arc(point[0], point[1], 14, 0, 360, false);
+                ctx.arc(point[0], point[1], App.defaults.radius, 0, 360, false);
 
                 var lg = ctx.createLinearGradient(point[0], point[1], point[0], point[1] + 40);
-                lg.addColorStop(0, '#313131');
-                lg.addColorStop(0.7, '#232323');
+                lg.addColorStop(0, 'rgba(49,49,49,0.95)');
+                lg.addColorStop(0.7, 'rgba(35,35,35,0.95)');
 
                 ctx.fillStyle = lg;
                 ctx.fill();
@@ -135,21 +145,27 @@
                 ctx.fillStyle = 'white';
                 ctx.fill();
             });
+			
         },
 
         active: function (point) {
             var ctx = this.ctx;
             ctx.globalCompositeOperation = 'destination-over';
             ctx.beginPath();
-            ctx.arc(this.defaults.paddingLeft + point[0] * this.pixelSteps, this.defaults.paddingLeft + point[1] * this.pixelSteps, 16, 0, 360, false);
-            ctx.fillStyle = "#7BD93E";
+            ctx.arc(this.defaults.padding + point[0] * this.pixelSteps, this.defaults.padding + point[1] * this.pixelSteps, this.defaults.radius + 2, 0, 360, false);
+            ctx.fillStyle = "#7bd93e";
             ctx.fill();
-        },
+			
+            ctx.beginPath();
+            ctx.arc(this.defaults.padding + point[0] * this.pixelSteps, this.defaults.padding + point[1] * this.pixelSteps, this.defaults.radius + 3, 0, 360, false);
+            ctx.fillStyle = "#acacac";
+            ctx.fill();
+		},
 
         grid: function () {
             for (var y = 0; y <= 2; y++) {
                 for (var x = 0; x <= 2; x++) {
-                    this.ctx.strokeRect(this.pixelSteps * x + 4.5, this.pixelSteps * y + 4.5, this.pixelSteps - 7, this.pixelSteps - 7);
+                    this.ctx.strokeRect(this.pixelSteps * x  + this.pixelSteps*0.1, this.pixelSteps * y + this.pixelSteps*0.1, this.pixelSteps-this.pixelSteps*0.3, this.pixelSteps - this.pixelSteps*0.3);
                 }
             }
         },
@@ -167,12 +183,14 @@
         hit: function (x, y) {
             var pixelSteps = this.pixelSteps,
                 xF = Math.floor(x / pixelSteps),
-                yF = Math.floor(y / pixelSteps);
-
-            // debug
-            //console.log('[' + (xF * pixelSteps + 4), x , (xF * pixelSteps) + pixelSteps + ']','[' + (yF * pixelSteps + 4),y ,(yF * pixelSteps) + pixelSteps + ']')  
-            return (((xF * pixelSteps + 4) < x && x < (xF * pixelSteps + pixelSteps)) && ((yF * pixelSteps + 4) < y && y < (yF * pixelSteps + pixelSteps)) && this.notUsed([xF, yF])) ? [xF, yF] : false;
-
+                yF = Math.floor(y / pixelSteps),
+				point = [ this.defaults.padding + xF * pixelSteps, this.defaults.padding + yF * pixelSteps],
+				rad = this.defaults.radius;
+				
+				// debug: this.ctx.strokeRect(point[0] - this.defaults.radius, point[1] - this.defaults.radius ,2*this.defaults.radius, 2* this.defaults.radius );				
+				return (x> (point[0]-rad) && x < (point[0]+rad) && y > (point[1]-rad) && y < (point[1]+rad) && x < this.defaults.width && y < this.defaults.height && this.notUsed([xF, yF])) ?					
+						[xF, yF] : false;
+						
         },
         connect: function (x, y) {
             var point = this.hit(x, y),
@@ -183,16 +201,18 @@
             if ( !! point) {
                 this.active(point);
                 this.hittedPoints.push(point);
+				this.updateInput();
 
                 //draw connection line
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.beginPath();
-                ctx.strokeStyle = '#E5E5E5';
+                ctx.strokeStyle = 'rgba(207,207,207,0.85)';
                 ctx.lineCap = 'round';
-                ctx.lineWidth = 20;
-                ctx.moveTo(this.defaults.paddingLeft + points[len - 1][0] * this.pixelSteps, this.defaults.paddingTop + points[len - 1][1] * this.pixelSteps);
-                ctx.lineTo(this.defaults.paddingLeft + points[len][0] * this.pixelSteps, this.defaults.paddingTop + points[len][1] * this.pixelSteps);
+                ctx.lineWidth = 14;
+                ctx.moveTo(this.defaults.padding + points[len - 1][0] * this.pixelSteps, this.defaults.padding + points[len - 1][1] * this.pixelSteps);
+                ctx.lineTo(this.defaults.padding + points[len][0] * this.pixelSteps, this.defaults.padding + points[len][1] * this.pixelSteps);
                 ctx.stroke();
+				
 
             }
         },
@@ -205,6 +225,7 @@
             if ( !! point) {
                 this.active(point)
                 this.hittedPoints.push(point);
+				this.updateInput();
             }
         },
     };
