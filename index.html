@@ -3,6 +3,18 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>From the Labs | Android like PasswdApp | wemakeweb</title>
+<!--<script src="uuCanvas.js"></script>-->
+<script src="excanvasBig.js"></script>
+<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript" src="passwd.js?v=1"></script>
+<script type="text/javascript">
+$(function(){
+	$('#passwordField').boomPasswd({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789','frg','hzt','999']
+	});
+});
+</script>
 <style type="text/css">
 html {
 	
@@ -28,14 +40,22 @@ button {
 	width:150px;
 	text-align:center;
 }
-canvas { border: 1px solid black; }
+canvas { border: 1px solid #999; }
+canvas.active { cursor:pointer;}
 </style>
 </head>
 <body>
 <div id="container">
-  <!--<h2>Draw pattern to unlock</h2>
-  <canvas id="canvas" width="190" height="190"></canvas>
-  <button id="record" class="">Click to Record Pattern</button>-->
+  <!-- js Bookmark
+  javascript:(function(d){
+  var m=d.createElement('script');
+  m.type='text/javascript';
+  m.src='http://share.wemakeweb.de/passwd.js?';
+  d.getElementsByTagName('head')[0].appendChild(m);
+})(document);
+  
+  
+  -->
   
   <form action="#" >
   	<p>
@@ -52,14 +72,16 @@ canvas { border: 1px solid black; }
     <p>
     	<label for="password">Passwort</label>
         <input type="password" name="password" id="passwordField" />
-    </p>
+      </p>
   </form>
 </div>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
 <script type="text/javascript" src="passwd.js?v=1"></script>
 <script type="text/javascript">
 $(function(){
-	$('#passwordField').boomPasswd();
+	$('#passwordField').boomPasswd({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789','frg','hzt','999']
+	});
 });
 /*$.noConflict();
 
@@ -449,6 +471,6 @@ PasswdApp.prototype = {
 
 var PasswdApp = window.PasswdApp = new PasswdApp;  */
 
-</script>
+</script>-->
 </body>
 </html>
