@@ -1,5 +1,4 @@
-;
-(function ($, window, document, undefined) {
+;(function ($, window, document, undefined) {
 
     $.fn.boomPasswd = function (options) {
         var pluginInstance = $.data(this[0], "boomPasswdInstance"),
@@ -93,7 +92,16 @@
 
             $(this.input).val(passwd);
         },
-
+		getTouches : function (e) {
+					if (e.originalEvent) {
+						if (e.originalEvent.touches && e.originalEvent.touches.length) {
+							return e.originalEvent.touches;
+						} else if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+							return e.originalEvent.changedTouches;
+						}
+					}
+					return e.touches;
+		},
         setup: function (field) {
             var App = this,
                 canvas = document.createElement('canvas'),
@@ -109,33 +117,46 @@
 
             $(document.getElementById('boomPasswdCtx')).data({
                 'boomPasswdInstance': App
-            }).bind('mousedown mouseup mousemove mouseout', function (event) {
-                var x = event.pageX - this.offsetLeft,
-                    y = event.pageY - this.offsetTop;
-
-                switch (event.type) {
-                case 'mousedown':
-                    App.mousedown = true;
-
-                    if (App.hittedPoints.length) {
-                        App.connect(x, y)
-                    } else {
-                        App.start(x, y);
-                    }
-                    break;
-                case 'mouseup':
-                case 'mouseout':
-                    App.mousedown = false;
-                    break;
-                case 'mousemove':
-                    App.mousedown && App.connect(x, y);
-                    break;
-                }
+            }).bind('mousedown mouseup mousemove mouseout touchstart touchmove touchend touchcancel', function (event) {               				      
+					if( event.type === 'touchstart' || event.type === 'touchmove' ){
+						var x = event.originalEvent.touches[0].pageX - this.offsetLeft,
+							y = event.originalEvent.touches[0].pageY - this.offsetTop;
+							
+							event.preventDefault();
+					} else {
+						 var x = event.pageX - this.offsetLeft,
+				    		y = event.pageY - this.offsetTop;
+					}
+					
+				switch (event.type) {
+					case 'mousedown':
+					case 'touchstart':
+						App.mousedown = true;
+						if (App.hittedPoints.length) {
+							App.connect(x, y)
+						} else {
+							App.start(x, y);
+						}
+						break;
+					case 'mouseup':
+					case 'mouseout':
+					case 'touchcancel':
+					case 'touchend':
+						App.mousedown = false;
+						break;
+					
+					case 'mousemove':
+					case 'touchmove':
+						App.mousedown && App.connect(x, y);
+						break;				
+				}
             });
-
-            if (!ctx) {
+			
+			if (!ctx) {
                 ctx = document.getElementById('boomPasswdCtx');
             }
+			
+			
             App.ctx = ctx = ctx.getContext('2d');
 
             App.pixelSteps = Math.floor((App.defaults.width) / 3);
