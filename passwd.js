@@ -1,3 +1,11 @@
+/*!
+ * jQuery DontType Plugin v0.9
+ * 
+ * Copyright 2011, Sebstian Otto
+ * wemakeweb / sotto@wemakeweb.de
+ *
+ */
+
 ;(function ($, window, document, undefined) {
 
     $.fn.dontType = function (options) {
@@ -30,16 +38,14 @@
                 padding: 25,
                 radius: 14,
                 styles: {
-                    circle: {
-                        borderGradient: {
-                            from: '#313131',
-                            to: '#232323'
-                        },
-                        innerColor: '#fff'
+                    dotGradient: {
+                        from: 'rgba(49,49,49,0.95)',
+                        to: 'rgba(35,35,35,0.95)'
                     },
-                    line: {
-                        color: '#fff'
-                    }
+                    dotInner: 'rgb(255,255,255)',
+                    dotActiveInner: 'rgb(123,217,62)',
+                    dotActiveBorder: 'rgb(172,172,172)',
+                    lineColor: 'rgba(207,207,207,0.85)'
                 },
 
                 //advanced options
@@ -49,10 +55,10 @@
 
                 noSupport: function () {
                     // include ExCanvas	 locally
-/*var s = document.createElement('script');
-                    s.src = 'excanvas.js';
+                    var s = document.createElement('script');
+                    s.src = 'excanvasMod.js';
                     s.type = 'text/javascript';
-                    document.getElementsByTagName("head")[0].appendChild(s)*/
+                    document.getElementsByTagName("head")[0].appendChild(s);
                 }
 
             }, options);
@@ -144,17 +150,7 @@
             App.pixelSteps = Math.floor((App.defaults.width) / 3);
 
             // calculate point cords
-            $.each([
-                [0, 0],
-                [1, 0],
-                [2, 0],
-                [0, 1],
-                [1, 1],
-                [2, 1],
-                [0, 2],
-                [1, 2],
-                [2, 2]
-            ], function (i, v) {
+            $.each([[0, 0],[1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2]], function (i, v) {
                 App.drawPoint.call(App, [App.defaults.padding + (App.pixelSteps * v[1]), App.defaults.padding + (App.pixelSteps * v[0])], false);
             });
         },
@@ -169,14 +165,13 @@
                 if (isActive) {
                     globalCompositeOperation = 'destination-over';
                     arc(point[0], point[1], this.defaults.radius + 2, 0, 2.0 * Math.PI, false);
-                    fillStyle = "#7bd93e";
+                    fillStyle = this.defaults.styles.dotActiveInner;
 
-                } else /* default state*/
-                {
+                } else {
                     arc(point[0], point[1], this.defaults.radius, 0, Math.PI * 2.0, true);
                     var lg = createLinearGradient(point[0], point[1], point[0], point[1] + 40);
-                    lg.addColorStop(0, 'rgba(49,49,49,0.95)');
-                    lg.addColorStop(0.7, 'rgba(35,35,35,0.95)');
+                    lg.addColorStop(0, this.defaults.styles.dotGradient.from);
+                    lg.addColorStop(0.7, this.defaults.styles.dotGradient.to);
                     fillStyle = lg;
                 }
 
@@ -187,12 +182,12 @@
                 if (isActive) {
                     globalCompositeOperation = 'destination-over';
                     arc(point[0], point[1], this.defaults.radius + 3, 0, 2.0 * Math.PI, false);
-                    fillStyle = "#acacac";
+                    fillStyle = this.defaults.styles.dotActiveBorder;
 
                 } else {
                     globalCompositeOperation = 'source-over';
                     arc(point[0], point[1], 6, 0, Math.PI * 2.0, true);
-                    fillStyle = '#fff';
+                    fillStyle = this.defaults.styles.dotInner;
 
                 }
 
