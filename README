@@ -1,4 +1,4 @@
-<h2>DontType!<h2>
+DontType!
 Javascript implementation of the Android password interface. Replaces conventional text inputs.
 
 A graphical interface for entering passwords using a grid - similar to the Android password input interface. Replaces regular passwords inputs with a simple drawing interface.
