@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>DontType!</title>
+<style type="text/css">
+#container {
+	font-family:Arial, Helvetica, sans-serif;
+	margin-top:100px;
+}
+h2 {
+	font-size:13px;
+	margin-left:25px;
+	margin-bottom:-5px;
+}
+input[type=submit] {
+	background:black;
+	border:1px solid gray;
+	-moz-box-shadow:1px 1px 3px black;
+	-khtml-box-shadow:1px 1px 3px black;
+	color:#fff;
+	margin-left:28px;
+	width:150px;
+	text-align:center;
+}
+canvas { border: 1px solid #999; }
+canvas.active { cursor:pointer;}
+.box { width: 600px; }
+.left { float:left; margin-left:40px;}
+label { display:block;}
+</style>
+</head>
+<body>
+<div id="container">
+<div class="box left"> 
+<p><h3> Form with normal Plugin call</h3> <pre class="brush: js">$(function(){
+	$('#passwordField').dontType();	
+});
+</pre></p> 
+  <form action="#" >
+  	<p>
+    	<label for="name">Name</label>
+        <input type="text" name="name" id="nameField" />
+    </p>
+    
+   <p>
+    	<label for="email">Email</label>
+        <input type="text" name="email" id="emailField" />
+    </p>
+  
+    
+    <p>
+    	<label for="password">Passwort</label>
+        <input type="password" name="password" id="passwordField" />
+    </p>
+    	<button id="serialize1">Serialize Form </button>
+  </form>
+  </div>
+  <div class="box left">
+  <p><h3>Form with convertMap</h3> <pre class="brush: js">$(function(){
+  	$('#passwordField2').dontType({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789', 'frg', 'hzt', '999']		
+	});	
+  });
+  </pre></p> 
+  <form action="#">
+  <p>
+    	<label for="password">Passwort</label>
+        <input type="password" name="password" id="passwordField2" />
+  </p>
+  		<button id="serialize2">Serialize Form </button>
+  
+  </form>
+  
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript" src="dontType.js"></script>
+<script type="text/javascript">
+$(function(){
+	
+	// Plugin
+	$('#passwordField').dontType();	
+	
+	//Plugin call with convert Map
+	$('#passwordField2').dontType({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789', 'frg', 'hzt', '999']		
+	});	
+	
+	
+	
+	
+	//additional for demo
+	$(document.getElementById('serialize1')).bind('click',function(e){
+		var name = $(document.getElementById('nameField')).val(),
+			email = $(document.getElementById('emailField')).val(),
+			password = $(document.getElementById('passwordField')).val();
+			
+		alert( 'Name: ' + name + ' Email: ' + email + ' Password: ' + password ); 
+		e.preventDefault();	
+	});
+	
+	
+	$(document.getElementById('serialize2')).bind('click',function(e){
+		var password = $(document.getElementById('passwordField2')).val();
+			
+		alert(' Password: ' + password ); 
+		e.preventDefault();
+	});	
+	
+});
+</script>
+</html>
