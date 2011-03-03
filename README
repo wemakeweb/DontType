@@ -1,0 +1,6 @@
+DontType!
+Javascript implementation of the Android password interface. Replaces conventional text inputs.
+
+A graphical interface for entering passwords using a grid - similar to the Android password input interface. Replaces regular passwords inputs with a simple drawing interface.
+
+Supports modern Browsers and Â touch devices like iphone and android.
