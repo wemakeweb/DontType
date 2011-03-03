@@ -2,14 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>From the Labs | Android like PasswdApp | wemakeweb</title>
+<title>DontType!</title>
 <style type="text/css">
-html {
-	
-}
 #container {
-	width:200px;
-	margin:auto;
 	font-family:Arial, Helvetica, sans-serif;
 	margin-top:100px;
 }
@@ -18,7 +13,7 @@ h2 {
 	margin-left:25px;
 	margin-bottom:-5px;
 }
-button {
+input[type=submit] {
 	background:black;
 	border:1px solid gray;
 	-moz-box-shadow:1px 1px 3px black;
@@ -28,15 +23,20 @@ button {
 	width:150px;
 	text-align:center;
 }
-canvas { border: 1px solid black; }
+canvas { border: 1px solid #999; }
+canvas.active { cursor:pointer;}
+.box { width: 600px; }
+.left { float:left; margin-left:40px;}
+label { display:block;}
 </style>
 </head>
 <body>
 <div id="container">
-  <!--<h2>Draw pattern to unlock</h2>
-  <canvas id="canvas" width="190" height="190"></canvas>
-  <button id="record" class="">Click to Record Pattern</button>-->
-  
+<div class="box left"> 
+<p><h3> Form with normal Plugin call</h3> <pre class="brush: js">$(function(){
+	$('#passwordField').dontType();	
+});
+</pre></p> 
   <form action="#" >
   	<p>
     	<label for="name">Name</label>
@@ -53,402 +53,62 @@ canvas { border: 1px solid black; }
     	<label for="password">Passwort</label>
         <input type="password" name="password" id="passwordField" />
     </p>
+    	<button id="serialize1">Serialize Form </button>
   </form>
+  </div>
+  <div class="box left">
+  <p><h3>Form with convertMap</h3> <pre class="brush: js">$(function(){
+  	$('#passwordField2').dontType({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789', 'frg', 'hzt', '999']		
+	});	
+  });
+  </pre></p> 
+  <form action="#">
+  <p>
+    	<label for="password">Passwort</label>
+        <input type="password" name="password" id="passwordField2" />
+  </p>
+  		<button id="serialize2">Serialize Form </button>
+  
+  </form>
+  
+  </div>
 </div>
+</body>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-<script type="text/javascript" src="passwd.js?v=1"></script>
+<script type="text/javascript" src="dontType.js"></script>
 <script type="text/javascript">
 $(function(){
-	$('#passwordField').boomPasswd();
-});
-/*$.noConflict();
-
-
-
-var PasswdApp = function (options) {
-
-    var defaults = {
-        // dom element 
-        context: null,
-
-        // default color options for the circles
-        // if no gradient required simply put the same color in both
-        circle: {
-            borderGradient: {
-                from: '#313131',
-                to: '#232323',
-            },
-            innerColor: '#fff',
-        },
-
-        // default color options for the connection lines
-        line: {
-			color : '#fff',
-		},
-		
-        // callbacks
-        inputEnd: function (input) {},
-        inputStart: function () {},
-        success: function () {},
-        submit: function () {},
-
-
-
-    }
-
-
-
-    jQuery.extend(defaults, options || {});
-
-
-
-    var c = document.getElementById('canvas');
-
-    this.c = c.getContext('2d');
-
-    this.points = [
-
-        [20, 20],
-        [50, 20],
-        [80, 20],
-
-        [20, 50],
-        [50, 50],
-        [80, 50],
-
-        [20, 80],
-        [50, 80],
-        [80, 80]
-
-    ];
-
-
-
-    this.setup();
-
-
-
-    jQuery(c).bind('mousedown', function (e) {
-        var x = e.pageX - this.offsetLeft,
-            y = e.pageY - this.offsetTop;
-
-        console.log('mousedown')
-
-        PasswdApp.mousedown = true;
-        PasswdApp.firstPoint(x, y);
-
-    });
-
-
-
-    jQuery(c).bind('mousemove', function (e) {
-        var x = e.pageX - this.offsetLeft,
-            y = e.pageY - this.offsetTop;
-
-        if (PasswdApp.mousedown) {
-            console.log('drag')
-            PasswdApp.onDrag(x, y);
-        }
-    });
-
-
-
-    jQuery(c).bind('mouseup', function (e) {
-        console.log('mouseup')
-        PasswdApp.mousedown = false;
-
-        // PasswdApp.IC && PasswdApp.onInputEnd();
-
-        if (PasswdApp.onRecord !== true) {
-            PasswdApp.setup();
-        }
-    });
-
-
-
-    jQuery(c).bind('mouseout', function (e) {
-        PasswdApp.mousedown = false;
-        PasswdApp.IC && PasswdApp.onInputEnd();
-
-        if (PasswdApp.onRecord !== true) {
-            PasswdApp.setup();
-        }
-
-    });
-
-
-
-    jQuery('button').toggle(
-    function () {
-        jQuery(this).html('Click Again to Save');
-        PasswdApp.recording('start');
-    },
-    function () {
-        PasswdApp.recording('save');
-        jQuery(this).html('saved');
-        setTimeout(function () {
-            jQuery('button').html('Now, Draw your Pattern');
-        }, 1000);
-
-    });
-
-}
-
-
-
-PasswdApp.prototype = {
 	
-    setup: function () {
-
-        this.c.clearRect(0, 0, 400, 300);
-
-        for (var i in this.points) {
-
-            this.c.beginPath();
-
-            this.c.arc(this.points[i][0], this.points[i][1], 20, 0, 360, false);
-
-            var lingrad = this.c.createLinearGradient(this.points[i][0], this.points[i][1], this.points[i][0], this.points[i][1] + 40);
-
-            lingrad.addColorStop(0, '#313131');
-
-            lingrad.addColorStop(0.7, '#232323');
-
-
-
-            this.c.fillStyle = lingrad;
-
-            this.c.fill();
-
-
-
-            this.c.beginPath();
-
-            this.c.globalCompositeOperation = 'source-over';
-
-            this.c.arc(this.points[i][0], this.points[i][1], 8, 0, 360, false);
-
-            this.c.fillStyle = 'white';
-
-            this.c.fill();
-
-        }
-
-        this.hittedPoints = [];
-
-    },
-
-    point: function (x, y) {
-        //	[00,10,20]
-        //	[01,11,21]
-        //	[02,12,22]				
-        return [ Math.floor(x / 60) , Math.floor(y / 60) ];
-    },
-
-    alreadyUsed: function (pointArray) {
-
-        var hitted = this.hittedPoints.join('|');
-
-        var cur = pointArray.toString();
-
-        return hitted.search(cur) !== -1 ? true : false
-
-    },
-
-    hit: function (x, y) {
-
-        var x = Math.floor(x / 20),
-
-            y = Math.floor(y / 20);
-
-        return x === 3 || x === 6 || y === 3 || y === 6 || y > 8 || x > 8 ? false : true;
-
-    },
-
-    firstPoint: function (x, y) {
-
-        if (this.hit(x, y) === 0) {
-
-            var currentPoint = this.point(x, y);
-
-            this.lastPoint = [currentPoint[0], currentPoint[1]];
-
-
-
-            // overdraw first circle
-            this.c.globalCompositeOperation = 'destination-over';
-
-            this.c.beginPath();
-
-            this.c.arc(40 + currentPoint[0] * 60, 40 + currentPoint[1] * 60, 23, 0, 360, false);
-
-            this.c.fillStyle = "#7BD93E";
-
-            this.c.fill();
-
-            this.hittedPoints.push(currentPoint);
-
-        }
-
-
-
-    },
-
-    recording: function (state) {
-
-        if (state === 'start') {
-
-            this.onRecord = true;
-
-        }
-
-
-
-        if (state === 'save' && this.onRecord === true) {
-
-            this.recorded = this.hittedPoints;
-
-            this.onRecord = false;
-
-            this.setup();
-
-            this.IC = true;
-
-        }
-
-    },
-
-    draw: function (x, y) {
-
-
-
-        if (this.hit(x, y)) {
-
-            var currPoint = this.point(x, y);
-
-
-
-            if (this.alreadyUsed(currPoint) === false) {
-
-
-
-                //draw active state
-                this.c.globalCompositeOperation = 'destination-over';
-
-                this.c.beginPath();
-
-                this.c.arc(40 + currPoint[0] * 60, 40 + currPoint[1] * 60, 23, 0, 360, false);
-
-                this.c.fillStyle = "#7BD93E";
-
-                this.c.fill();
-
-
-
-                this.hittedPoints.push(currPoint);
-
-
-
-                //draw line
-                this.c.globalCompositeOperation = 'source-over';
-
-                this.c.beginPath();
-
-                this.c.strokeStyle = '#E5E5E5';
-
-                this.c.lineCap = 'round';
-
-                this.c.lineWidth = 7;
-
-
-
-                this.c.moveTo(40 + (this.lastPoint[0] * 60), 40 + (this.lastPoint[1] * 60));
-
-                this.c.lineTo(40 + currPoint[0] * 60, 40 + currPoint[1] * 60);
-
-                this.c.stroke();
-
-                this.lastPoint = [currPoint[0], currPoint[1]];
-
-
-
-
-
-            }
-
-
-
-        }
-
-
-
-    },
-
-    check: function () {
-
-        var test = true;
-
-        for (var i in this.recorded) {
-
-            for (var z in this.recorded[i]) {
-
-                test = (this.recorded[i][z] === this.hittedPoints[i][z]);
-
-                if (!test) {
-
-                    return false;
-
-                }
-
-            }
-
-        }
-
-        return test;
-
-    },
-
-    log: function (t, args) {
-
-        console.log && console.log(t, args);
-
-    },
-
-    onDrag: function (x, y) {
-
-        !this.hit(x, y) && this.draw(x, y)
-
-    },
-
-
-
-
-
-    onInputEnd: function () {
-
-        this.IC &&
-
-        this.check() &&
-
-        this.onCorrect.call(this.hittedPoints);
-
-    },
-
-
-
-    onCorrect: function () {
-
-        console.log(this);
-
-        //this.log('Password Correct');
-    },
-
-
-
-}
-
-var PasswdApp = window.PasswdApp = new PasswdApp;  */
-
+	// Plugin
+	$('#passwordField').dontType();	
+	
+	//Plugin call with convert Map
+	$('#passwordField2').dontType({
+		convertMap : ['abd', 'ghc', '56d', 'tzr', 'löp', '789', 'frg', 'hzt', '999']		
+	});	
+	
+	
+	
+	
+	//additional for demo
+	$(document.getElementById('serialize1')).bind('click',function(e){
+		var name = $(document.getElementById('nameField')).val(),
+			email = $(document.getElementById('emailField')).val(),
+			password = $(document.getElementById('passwordField')).val();
+			
+		alert( 'Name: ' + name + ' Email: ' + email + ' Password: ' + password ); 
+		e.preventDefault();	
+	});
+	
+	
+	$(document.getElementById('serialize2')).bind('click',function(e){
+		var password = $(document.getElementById('passwordField2')).val();
+			
+		alert(' Password: ' + password ); 
+		e.preventDefault();
+	});	
+	
+});
 </script>
-</body>
 </html>
